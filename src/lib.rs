@@ -25,7 +25,7 @@
 //! Details about the use and calculation of disc IDs can be found at the [MusicBrainz
 //! disc ID documentation](https://musicbrainz.org/doc/Disc_ID).
 //!
-//! The source code of this library is available on [GitHub](https://github.com/phw/rust-discid)
+//! The source code of this library is available on [SourceHut](https://git.sr.ht/~phw/rust-discid)
 //! under the terms of the GNU Lesser General Public License version 3 or later.
 //!
 //! [`DiscId::read`]: ./struct.DiscId.html#method.read

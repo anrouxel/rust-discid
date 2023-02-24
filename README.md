@@ -9,7 +9,7 @@ It allows calculating DiscIDs (MusicBrainz and freedb) for Audio CDs. Additional
 the library can extract the MCN/UPC/EAN and the ISRCs from disc.
 
 ## Requirements
-* libdiscid >= 0.6.0
+- libdiscid >= 0.6.0
 
 ## Usage
 
@@ -44,17 +44,23 @@ fn main() {
 
 See the [API documentation](https://docs.rs/discid) for details.
 Additional examples are available in the
-[examples/](https://github.com/phw/rust-discid/tree/master/examples) directory.
+[examples/](https://git.sr.ht/~phw/rust-discid/tree/main/item/examples) directory.
 
 ## Contribute
-The source code for discid is available on
-[GitHub](https://github.com/phw/rust-discid).
+The source code for discid-sys is available on
+[SourceHut](https://git.sr.ht/~phw/rust-discid).
 
 Please report any issues on the
-[issue tracker](https://github.com/phw/rust-discid/issues).
+[issue tracker](https://todo.sr.ht/~phw/rust-discid).
+
+Patches can be submitted to the [mailing list](https://lists.sr.ht/~phw/musicbrainz).
+You can clone the repository directly on SourceHut and submit your changes
+with the "Prepare patchset" button. Please see SourceHut's
+[documentation for sending patches upstream](https://man.sr.ht/git.sr.ht/#sending-patches-upstream)
+for details.
 
 ## License
-discid Copyright (c) 2019-2020 by Philipp Wolfer <ph.wolfer@gmail.com>
+discid Copyright (c) 2019-2023 by Philipp Wolfer <ph.wolfer@gmail.com>
 
 discid is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
@@ -66,4 +72,4 @@ but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU Lesser General Public License for more details.
 
-See LICENSE for details.
+See [LICENSE](./LICENSE) for details.
