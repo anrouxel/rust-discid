@@ -15,7 +15,7 @@ the library can extract the MCN/UPC/EAN and the ISRCs from disc.
 
 ### Read only the TOC
 
-```rust,no_run
+```rust no_run
 use discid::DiscId;
 
 fn main() {
@@ -29,7 +29,7 @@ fn main() {
 
 ### Read the TOC and ISRCs
 
-```rust,no_run
+```rust no_run
 use discid::{DiscId, Features};
 
 fn main() {
