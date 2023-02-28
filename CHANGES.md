@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.5 (2022-02-28)
+- Use latest patch versions for dependencies
+- Added submission URL to parsetoc example
+- Moved sources to https://git.sr.ht/~phw/rust-discid
+
 ## 0.4.4 (2020-11-11)
 - Depend on [discid-sys](https://crates.io/crates/discid-sys) 0.4
 - Minor documentation fixes
