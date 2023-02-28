@@ -2,6 +2,7 @@
 [![crates.io](https://img.shields.io/crates/v/discid.svg)](https://crates.io/crates/discid)
 [![Documentation](https://docs.rs/discid/badge.svg)](https://docs.rs/discid)
 [![License](https://img.shields.io/crates/l/discid.svg)](https://crates.io/crates/discid)
+[![builds.sr.ht status](https://builds.sr.ht/~phw/rust-discid/commits/main/.svg)](https://builds.sr.ht/~phw/rust-discid/commits/main/?)
 
 ## About
 discid provides Rust bindings for the MusicBrainz DiscID library [libdiscid](http://musicbrainz.org/doc/libdiscid).
