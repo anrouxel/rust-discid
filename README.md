@@ -48,7 +48,7 @@ Additional examples are available in the
 [examples/](https://git.sr.ht/~phw/rust-discid/tree/main/item/examples) directory.
 
 ## Contribute
-The source code for discid-sys is available on
+The source code for rust-discid is available on
 [SourceHut](https://git.sr.ht/~phw/rust-discid).
 
 Please report any issues on the
@@ -61,9 +61,9 @@ with the "Prepare patchset" button. Please see SourceHut's
 for details.
 
 ## License
-discid Copyright (c) 2019-2023 by Philipp Wolfer <ph.wolfer@gmail.com>
+rust-discid Copyright (c) 2019-2023 by Philipp Wolfer <ph.wolfer@gmail.com>
 
-discid is free software: you can redistribute it and/or modify
+rust-discid is free software: you can redistribute it and/or modify
 it under the terms of the GNU Lesser General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
 (at your option) any later version.
