@@ -1,6 +1,9 @@
 # Changelog
 
-## 0.4.5 (2022-02-28)
+## 0.5.0 (2023-03-02)
+- Update for rust-discid-sys 0.5
+
+## 0.4.5 (2023-02-28)
 - Use latest patch versions for dependencies
 - Added submission URL to parsetoc example
 - Moved sources to https://git.sr.ht/~phw/rust-discid
