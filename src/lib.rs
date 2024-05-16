@@ -63,6 +63,7 @@ bitflags! {
     /// See [`DiscId::read_features`] for details.
     ///
     /// [`DiscId::read_features`]: ./struct.DiscId.html#method.read_features
+    #[derive(PartialEq, Debug)]
     pub struct Features: u32 {
         /// Read the CD TOC.
         ///
@@ -91,7 +92,7 @@ bitflags! {
 
 impl From<Features> for discid_feature {
     fn from(item: Features) -> Self {
-        discid_feature(item.bits)
+        discid_feature(item.bits())
     }
 }
 
@@ -249,7 +250,7 @@ impl DiscId {
             Some(d) => CString::new(d).expect("CString::new failed").into_raw(),
             None => ptr::null(),
         };
-        let status = unsafe { discid_read_sparse(disc.handle.as_ptr(), c_device, features.bits) };
+        let status = unsafe { discid_read_sparse(disc.handle.as_ptr(), c_device, features.bits()) };
         if status == 0 {
             Err(disc.error())
         } else {
