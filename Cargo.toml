@@ -11,5 +11,5 @@ categories = ["api-bindings"]
 license = "LGPL-3.0-or-later"
 
 [dependencies]
-bitflags = "2.6"
+bitflags = "2.9"
 discid-sys = "0.5"
