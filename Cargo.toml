@@ -2,7 +2,7 @@
 name = "discid"
 version = "0.5.0"
 authors = ["Philipp Wolfer <ph.wolfer@gmail.com>"]
-edition = "2021"
+edition = "2024"
 description = "Bindings for MusicBrainz libdiscid"
 repository = "https://git.sr.ht/~phw/rust-discid"
 readme = "README.md"

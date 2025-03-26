@@ -684,7 +684,8 @@ mod tests {
         );
         assert_eq!(
             "http://musicbrainz.org/cdtoc/attach?id=Wn8eRBtfLDfM0qjYPdxrz.Zjs_U-&tracks=10&toc=1+10+206535+150+18901+39738+59557+79152+100126+124833+147278+166336+182560",
-            disc.submission_url());
+            disc.submission_url()
+        );
         for track in disc.tracks() {
             let offset = offsets[track.number as usize];
             let next = if track.number < last_track {
