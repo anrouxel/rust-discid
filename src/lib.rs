@@ -43,6 +43,7 @@
     unused_import_braces,
     unused_qualifications
 )]
+#![warn(clippy::undocumented_unsafe_blocks)]
 
 use discid_sys::*;
 use std::error::Error;
@@ -132,10 +133,15 @@ struct DiscIdHandle {
 }
 
 impl DiscIdHandle {
-    fn new(handle: *mut discid_sys::DiscId) -> DiscIdHandle {
-        unsafe {
-            DiscIdHandle {
-                real_handle: ptr::NonNull::new_unchecked(handle),
+    fn new(handle: *mut discid_sys::DiscId) -> Result<DiscIdHandle, DiscError> {
+        if handle.is_null() {
+            Err(DiscError::new("handle must not be null"))
+        } else {
+            // SAFETY: handle is non-null.
+            unsafe {
+                Ok(DiscIdHandle {
+                    real_handle: ptr::NonNull::new_unchecked(handle),
+                })
             }
         }
     }
@@ -147,6 +153,7 @@ impl DiscIdHandle {
 
 impl Drop for DiscIdHandle {
     fn drop(&mut self) {
+        // SAFETY: DiscIdHandle.handle is always non-null.
         unsafe { discid_free(self.as_ptr()) }
     }
 }
@@ -166,15 +173,22 @@ pub struct DiscId {
 
 impl DiscId {
     fn new() -> Result<DiscId, DiscError> {
+        // SAFETY: FFI call with no preconditions.
         let handle = unsafe { discid_new() };
         if handle.is_null() {
             Err(DiscError::new(
                 "discid_new() failed, could not allocate memory",
             ))
         } else {
-            Ok(DiscId {
-                handle: Rc::new(DiscIdHandle::new(handle)),
-            })
+            let result = DiscIdHandle::new(handle);
+            match result {
+                Ok(handle_t) => Ok(DiscId {
+                    handle: Rc::new(handle_t),
+                }),
+                // This should never happen, as we checked handle for null
+                // beforehand.
+                Err(err) => Err(err),
+            }
         }
     }
 
@@ -250,6 +264,9 @@ impl DiscId {
             Some(d) => CString::new(d).expect("CString::new failed").into_raw(),
             None => ptr::null(),
         };
+        // SAFETY:
+        // - disc.handle is always non-null.
+        // - c_device is a proper null terminated C string or a null pointer.
         let status = unsafe { discid_read_sparse(disc.handle.as_ptr(), c_device, features.bits()) };
         if status == 0 {
             Err(disc.error())
@@ -284,7 +301,7 @@ impl DiscId {
     /// ```
     pub fn put(first: i32, offsets: &[i32]) -> Result<DiscId, DiscError> {
         let disc = DiscId::new()?;
-        let last = first + (offsets.len() as c_int) - 2;
+        let last = first + offsets.len() as i32 - 2;
         let offset_ptr: *mut c_int;
         let mut full_offsets: [c_int; 100];
 
@@ -293,15 +310,19 @@ impl DiscId {
             // If the first track is larger 1 empty tracks must be filled with 0.
             full_offsets = [0; 100];
             full_offsets[0] = offsets[0]; // Total sectors on disc
-            full_offsets[first as usize..(last + 1) as usize].copy_from_slice(&offsets[1..]);
+            full_offsets[first as usize..last as usize + 1].copy_from_slice(&offsets[1..]);
             offset_ptr = full_offsets.as_ptr() as *mut c_int;
         } else {
             // In case the track count starts at 1 we do not have to copy the array.
-            // libdiscid will not read beyond the boundary of `last + 1`, which in our case
-            // equals `offsets.length`.
+            // libdiscid will not read beyond the boundary of `last`, which in our case
+            // equals `offsets.length - 1` or less.
             offset_ptr = offsets.as_ptr() as *mut c_int;
         }
 
+        // SAFETY:
+        // - disc.handle is always non-null.
+        // - first and last are validated by discid_put.
+        // - the code above ensures offsets to be inside the bounds set by last.
         let status = unsafe { discid_put(disc.handle.as_ptr(), first, last, offset_ptr) };
         if status == 0 {
             Err(disc.error())
@@ -385,6 +406,7 @@ impl DiscId {
     /// assert!(can_read);
     /// ```
     pub fn has_feature(feature: Features) -> bool {
+        // SAFETY: FFI call with no preconditions.
         let result = unsafe { discid_has_feature(feature.into()) };
         result == 1
     }
@@ -400,6 +422,7 @@ impl DiscId {
     /// println!("{}", DiscId::version_string());
     /// ```
     pub fn version_string() -> String {
+        // SAFETY: FFI call with no preconditions.
         let str_ptr = unsafe { discid_get_version_string() };
         to_str(str_ptr)
     }
@@ -415,23 +438,27 @@ impl DiscId {
     /// println!("{}", DiscId::default_device());
     /// ```
     pub fn default_device() -> String {
+        // SAFETY: FFI call with no preconditions.
         let version_ptr = unsafe { discid_get_default_device() };
         to_str(version_ptr)
     }
 
     fn error(&self) -> DiscError {
+        // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_error_msg(self.handle.as_ptr()) };
         DiscError::new(&to_str(str_ptr))
     }
 
     /// The MusicBrainz disc ID.
     pub fn id(&self) -> String {
+        // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_id(self.handle.as_ptr()) };
         to_str(str_ptr)
     }
 
     /// The FreeDB disc ID.
     pub fn freedb_id(&self) -> String {
+        // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_freedb_id(self.handle.as_ptr()) };
         to_str(str_ptr)
     }
@@ -450,33 +477,39 @@ impl DiscId {
     ///
     /// [`DiscId::parse`]: #method.parse
     pub fn toc_string(&self) -> String {
+        // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_toc_string(self.handle.as_ptr()) };
         to_str(str_ptr)
     }
 
     /// An URL for submitting the DiscID to MusicBrainz.
     pub fn submission_url(&self) -> String {
+        // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_submission_url(self.handle.as_ptr()) };
         to_str(str_ptr)
     }
 
     /// The number of the first track on this disc.
     pub fn first_track_num(&self) -> i32 {
+        // SAFETY: self.handle is always non-null.
         unsafe { discid_get_first_track_num(self.handle.as_ptr()) }
     }
 
     /// The number of the last track on this disc.
     pub fn last_track_num(&self) -> i32 {
+        // SAFETY: self.handle is always non-null.
         unsafe { discid_get_last_track_num(self.handle.as_ptr()) }
     }
 
     /// The length of the disc in sectors.
     pub fn sectors(&self) -> i32 {
+        // SAFETY: self.handle is always non-null.
         unsafe { discid_get_sectors(self.handle.as_ptr()) }
     }
 
     /// The media catalogue number on the disc, if present.
     pub fn mcn(&self) -> String {
+        // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_mcn(self.handle.as_ptr()) };
         to_str(str_ptr)
     }
@@ -586,7 +619,9 @@ pub struct TrackIter {
 impl TrackIter {
     fn new(handle: Rc<DiscIdHandle>) -> TrackIter {
         let handle_ptr = handle.as_ptr();
+        // SAFETY: self.handle is always non-null.
         let first_track = unsafe { discid_get_first_track_num(handle_ptr) };
+        // SAFETY: See previous comment.
         let last_track = unsafe { discid_get_last_track_num(handle_ptr) };
         TrackIter {
             handle,
@@ -612,16 +647,22 @@ impl Iterator for TrackIter {
 
 fn get_track(handle: Rc<DiscIdHandle>, number: i32) -> Track {
     let handle_ptr = handle.as_ptr();
+    // SAFETY:
+    // - self.handle is always non-null.
+    // - track number is validated by libdiscid.
     let isrc_ptr = unsafe { discid_get_track_isrc(handle_ptr, number) };
     Track {
         number,
+        // SAFETY: See previous comment.
         offset: unsafe { discid_get_track_offset(handle_ptr, number) },
+        // SAFETY: See previous comment.
         sectors: unsafe { discid_get_track_length(handle_ptr, number) },
         isrc: to_str(isrc_ptr),
     }
 }
 
 fn to_str(c_buf: *const c_char) -> String {
+    // SAFETY: The caller has provided a pointer that points to a valid C string.
     let c_str: &CStr = unsafe { CStr::from_ptr(c_buf) };
     let str_slice = c_str.to_string_lossy();
     str_slice.into_owned()
