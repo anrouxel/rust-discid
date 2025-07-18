@@ -122,7 +122,7 @@ impl fmt::Display for DiscError {
 impl From<ParseIntError> for DiscError {
     fn from(err: ParseIntError) -> Self {
         DiscError {
-            reason: format!("{}", err),
+            reason: format!("{err}"),
         }
     }
 }
@@ -376,15 +376,14 @@ impl DiscId {
         }
 
         if i < 3 {
-            return Err(DiscError::new(&format!("Invalid TOC string {:?}", toc)));
+            return Err(DiscError::new(&format!("Invalid TOC string {toc:?}")));
         }
 
         let offset_count = (i - 3) as c_int;
         let track_count = last_track - first_track + 1;
         if track_count != offset_count {
             return Err(DiscError::new(&format!(
-                "Number of offsets {} does not match track count {}",
-                offset_count, track_count
+                "Number of offsets {offset_count} does not match track count {track_count}",
             )));
         }
 
@@ -569,8 +568,7 @@ impl DiscId {
         let last = self.last_track_num();
         if number < first || number > last {
             panic!(
-                "track number out of bounds: given {}, expected between {} and {}",
-                number, first, last
+                "track number out of bounds: given {number}, expected between {first} and {last}",
             );
         }
         get_track(Rc::clone(&self.handle), number)
