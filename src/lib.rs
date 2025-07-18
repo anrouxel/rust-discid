@@ -316,7 +316,7 @@ impl DiscId {
             full_offsets = [0; 100];
             full_offsets[0] = offsets[0]; // Total sectors on disc
             full_offsets[first as usize..last as usize + 1].copy_from_slice(&offsets[1..]);
-            offset_ptr = full_offsets.as_ptr() as *mut c_int;
+            offset_ptr = full_offsets.as_mut_ptr();
         } else {
             // In case the track count starts at 1 we do not have to copy the array.
             // libdiscid will not read beyond the boundary of `last`, which in our case
