@@ -1,4 +1,4 @@
-// Copyright (C) 2019-2023 Philipp Wolfer <ph.wolfer@gmail.com>
+// Copyright (C) 2019-2025 Philipp Wolfer <ph.wolfer@gmail.com>
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU Lesser General Public License as published by
@@ -41,7 +41,8 @@
     trivial_numeric_casts,
     unstable_features,
     unused_import_braces,
-    unused_qualifications
+    unused_qualifications,
+    clippy::manual_assert
 )]
 #![warn(clippy::undocumented_unsafe_blocks)]
 
@@ -566,11 +567,10 @@ impl DiscId {
     pub fn nth_track(&self, number: i32) -> Track {
         let first = self.first_track_num();
         let last = self.last_track_num();
-        if number < first || number > last {
-            panic!(
-                "track number out of bounds: given {number}, expected between {first} and {last}",
-            );
-        }
+        assert!(
+            !(number < first || number > last),
+            "track number out of bounds: given {number}, expected between {first} and {last}",
+        );
         get_track(Rc::clone(&self.handle), number)
     }
 }
