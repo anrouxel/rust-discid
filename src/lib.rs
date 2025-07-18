@@ -44,7 +44,11 @@
     unused_qualifications,
     clippy::manual_assert
 )]
-#![warn(clippy::missing_panics_doc, clippy::undocumented_unsafe_blocks)]
+#![warn(
+    clippy::missing_panics_doc,
+    clippy::must_use_candidate,
+    clippy::undocumented_unsafe_blocks
+)]
 
 use discid_sys::*;
 use std::error::Error;
@@ -405,6 +409,7 @@ impl DiscId {
     /// let can_read = DiscId::has_feature(Features::READ);
     /// assert!(can_read);
     /// ```
+    #[must_use]
     pub fn has_feature(feature: Features) -> bool {
         // SAFETY: FFI call with no preconditions.
         let result = unsafe { discid_has_feature(feature.into()) };
@@ -421,6 +426,7 @@ impl DiscId {
     ///
     /// println!("{}", DiscId::version_string());
     /// ```
+    #[must_use]
     pub fn version_string() -> String {
         // SAFETY: FFI call with no preconditions.
         let str_ptr = unsafe { discid_get_version_string() };
@@ -437,6 +443,7 @@ impl DiscId {
     ///
     /// println!("{}", DiscId::default_device());
     /// ```
+    #[must_use]
     pub fn default_device() -> String {
         // SAFETY: FFI call with no preconditions.
         let version_ptr = unsafe { discid_get_default_device() };
@@ -450,6 +457,7 @@ impl DiscId {
     }
 
     /// The MusicBrainz disc ID.
+    #[must_use]
     pub fn id(&self) -> String {
         // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_id(self.handle.as_ptr()) };
@@ -457,6 +465,7 @@ impl DiscId {
     }
 
     /// The FreeDB disc ID.
+    #[must_use]
     pub fn freedb_id(&self) -> String {
         // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_freedb_id(self.handle.as_ptr()) };
@@ -476,6 +485,7 @@ impl DiscId {
     /// See also [`DiscId::parse`] and the documentation for [Disc ID Calculation](https://musicbrainz.org/doc/Disc_ID_Calculation).
     ///
     /// [`DiscId::parse`]: #method.parse
+    #[must_use]
     pub fn toc_string(&self) -> String {
         // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_toc_string(self.handle.as_ptr()) };
@@ -483,6 +493,7 @@ impl DiscId {
     }
 
     /// An URL for submitting the DiscID to MusicBrainz.
+    #[must_use]
     pub fn submission_url(&self) -> String {
         // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_submission_url(self.handle.as_ptr()) };
@@ -490,24 +501,28 @@ impl DiscId {
     }
 
     /// The number of the first track on this disc.
+    #[must_use]
     pub fn first_track_num(&self) -> i32 {
         // SAFETY: self.handle is always non-null.
         unsafe { discid_get_first_track_num(self.handle.as_ptr()) }
     }
 
     /// The number of the last track on this disc.
+    #[must_use]
     pub fn last_track_num(&self) -> i32 {
         // SAFETY: self.handle is always non-null.
         unsafe { discid_get_last_track_num(self.handle.as_ptr()) }
     }
 
     /// The length of the disc in sectors.
+    #[must_use]
     pub fn sectors(&self) -> i32 {
         // SAFETY: self.handle is always non-null.
         unsafe { discid_get_sectors(self.handle.as_ptr()) }
     }
 
     /// The media catalogue number on the disc, if present.
+    #[must_use]
     pub fn mcn(&self) -> String {
         // SAFETY: self.handle is always non-null.
         let str_ptr = unsafe { discid_get_mcn(self.handle.as_ptr()) };
@@ -536,6 +551,7 @@ impl DiscId {
     /// ```
     ///
     /// [`Track`]: ./struct.Track.html
+    #[must_use]
     pub fn tracks(&self) -> TrackIter {
         TrackIter::new(Rc::clone(&self.handle))
     }
@@ -564,6 +580,7 @@ impl DiscId {
     /// [`Track`]: ./struct.Track.html
     /// [`first_track_num`]: #method.first_track_num
     /// [`last_track_num`]: #method.last_track_num
+    #[must_use]
     pub fn nth_track(&self, number: i32) -> Track {
         let first = self.first_track_num();
         let last = self.last_track_num();
@@ -877,7 +894,8 @@ mod tests {
             206535, 150, 18901, 39738, 59557, 79152, 100126, 124833, 147278, 166336, 182560,
         ];
         let disc = DiscId::put(first, &offsets).expect("DiscId::put failed");
-        disc.nth_track(11);
+        let track = disc.nth_track(11);
+        assert_eq!(11, track.number);
     }
 
     #[test]
