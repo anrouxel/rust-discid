@@ -44,7 +44,7 @@
     unused_qualifications,
     clippy::manual_assert
 )]
-#![warn(clippy::undocumented_unsafe_blocks)]
+#![warn(clippy::missing_panics_doc, clippy::undocumented_unsafe_blocks)]
 
 use discid_sys::*;
 use std::error::Error;
@@ -262,7 +262,7 @@ impl DiscId {
     pub fn read_features(device: Option<&str>, features: Features) -> Result<DiscId, DiscError> {
         let disc = DiscId::new()?;
         let c_device: *const c_char = match device {
-            Some(d) => CString::new(d).expect("CString::new failed").into_raw(),
+            Some(d) => CString::new(d).unwrap_or_default().into_raw(),
             None => ptr::null(),
         };
         // SAFETY:
