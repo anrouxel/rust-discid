@@ -98,7 +98,7 @@ bitflags! {
 
 impl From<Features> for discid_feature {
     fn from(item: Features) -> Self {
-        discid_feature(item.bits())
+        discid_feature(item.bits().try_into().unwrap())
     }
 }
 
