@@ -13,3 +13,6 @@ license = "LGPL-3.0-or-later"
 [dependencies]
 bitflags = "2.9"
 discid-sys = "0.5"
+
+[patch.crates-io]
+discid-sys = { git = "https://github.com/anrouxel/rust-discid-sys.git", rev="0.5.2" }
