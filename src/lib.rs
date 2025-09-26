@@ -98,7 +98,10 @@ bitflags! {
 
 impl From<Features> for discid_feature {
     fn from(item: Features) -> Self {
-        discid_feature(item.bits())
+        // item.bits() est un u32 ; on le convertit en c_int (i32) et on échoue si overflow.
+        let v: c_int = item.bits().try_into()
+            .expect("feature bits don't fit into c_int");
+        discid_feature(v)
     }
 }
 
