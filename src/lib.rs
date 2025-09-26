@@ -76,7 +76,7 @@ bitflags! {
         /// This is supported on all platforms and indicates that only the
         /// table of contents (TOC), from which the disc ID gets calculated,
         /// will be read.
-        const READ = discid_feature::DISCID_FEATURE_READ.0;
+        const READ = discid_feature::DISCID_FEATURE_READ.0 as u32;
 
         /// Read the MCN (aka barcode) information.
         ///
@@ -84,15 +84,15 @@ bitflags! {
         /// Without this feature [`DiscId::mcn`] will always return an empty string.
         ///
         /// [`DiscId::mcn`]: ./struct.DiscId.html#method.mcn
-        const MCN  = discid_feature::DISCID_FEATURE_MCN.0;
-
+        const MCN  = discid_feature::DISCID_FEATURE_MCN.0 as u32;
+        
         /// Supports reading the ISRCs per track.
         ///
         /// For each track read the ISRC encoded in the subchannel data. Not all CDs provide this
         /// information. Without this feature [`Track::isrc`] will always be an empty string.
         ///
         /// [`Track::isrc`]: ./struct.Track.html#structfield.isrc
-        const ISRC = discid_feature::DISCID_FEATURE_ISRC.0;
+        const ISRC = discid_feature::DISCID_FEATURE_ISRC.0 as u32;
     }
 }
 
